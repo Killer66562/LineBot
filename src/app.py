@@ -141,8 +141,8 @@ def process_final_input(reply_token, user_id):
     if user_testType == 'diabete':
         # 邏輯回歸預測
         user_input = {
-            'gender': user_data[0], 
-            'age': user_data[1], 
+            'gender': int(user_data[0]), 
+            'age': int(user_data[1]), 
             'bmi': user_data[2], 
             'hba1c': user_data[3], 
             'blood_sugar': user_data[4]
@@ -151,7 +151,7 @@ def process_final_input(reply_token, user_id):
         # 傳至NAS並回傳預測結果
         api_url = f'{base_api_url}/predict/diabetes'
         try:
-            response = requests.post(api_url, json=user_input)
+            response = requests.post(api_url, json=user_input, headers={'Content-type': 'application/json'})
             response.raise_for_status()
             response_data = response.json()
 
@@ -167,7 +167,7 @@ def process_final_input(reply_token, user_id):
                 TextSendMessage(text=f"糖尿病機率:{diabetes_percentage:.2f}%"),
                 TextSendMessage(text="謝謝光臨!! 有需要都可以在叫我喔")
             ])
-        except Exception as e:
+        except (Exception, requests.HTTPError):
             line_bot_api.reply_message(reply_token, [
                 TextSendMessage(text="伺服端錯誤，請稍後再試。")
             ])
