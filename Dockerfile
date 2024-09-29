@@ -9,4 +9,4 @@ EXPOSE 8080
 
 WORKDIR /opt/linebot/src
 
-CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
+CMD ["gunicorn", "--host", "::", "--port", "8080", "app:app"]
