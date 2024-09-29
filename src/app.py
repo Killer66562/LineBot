@@ -18,6 +18,8 @@ app = Flask(__name__)
 access_token = os.getenv("LINE_ACCESS_TOKEN")
 secret = os.getenv("LINE_SECRET")
 
+base_api_url = os.getenv("BASE_API_URL").removesuffix("/")
+
 line_bot_api = Configuration(access_token)  # token 確認
 handler = WebhookHandler(secret)      # secret 確認
 
@@ -151,7 +153,7 @@ def process_final_input(reply_token, user_id):
         )
 
         # 傳至NAS並回傳預測結果
-        api_url = 'http://120.107.172.113:8000/predict/diabetes'
+        api_url = f'{base_api_url}/diabetes'
         try:
             response = requests.post(api_url, json=user_input)
             response.raise_for_status()
@@ -261,9 +263,6 @@ def process_final_input(reply_token, user_id):
     del user_state[user_id]
     '''
     
-
-
-    
 def EndPrediction(reply_token, user_id):
     line_bot_api.reply_message(reply_token, TextSendMessage(text="謝謝光臨!! 有需要都可以在叫我喔"))
     del user_state[user_id]
@@ -280,13 +279,16 @@ def NextQuestion(reply_token, user_id):
 
 # 正整數驗證
 def validate_numeric_input(event, msg):
-    if not msg.isdigit():
+    try:
+        msg_float = float(msg)
+        if msg_float <= 0:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請輸入大於 0 的有效數字"))
+            return False
+        return True
+    except ValueError:
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請輸入正確的數字"))
         return False
-    if float(msg) <= 0:
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請輸入大於 0 的有效數字"))
-        return False
-    return True
+    
 # 用戶傳送訊息的時候做出的回覆
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
