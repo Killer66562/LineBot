@@ -140,34 +140,37 @@ def process_final_input(reply_token, user_id):
     
     if user_testType == 'diabete':
         # 邏輯回歸預測
-        user_input = pd.DataFrame(
-            data=[user_data], 
-            columns=[
-                'gender', 
-                'age', 
-                'bmi', 
-                'HbA1c_level', 
-                'blood_glucose_level'
-            ]
-        )
+        user_input = {
+            'gender': user_data[0], 
+            'age': user_data[1], 
+            'bmi': user_data[2], 
+            'hba1c': user_data[3], 
+            'blood_sugar': user_data[4]
+        }
 
         # 傳至NAS並回傳預測結果
         api_url = f'{base_api_url}/diabetes'
         try:
             response = requests.post(api_url, json=user_input)
             response.raise_for_status()
-            prediction_proba = response.json().get('prediction_proba', [0, 0])
-        except requests.exceptions.RequestException as e:
-            prediction_proba = [0, 0]  # 預設為[0, 0]，表示出錯
+            response_data = response.json()
 
-        # 二分判斷
-        result = "没有糖尿病" if prediction_proba[1] < 0.5 else "有糖尿病"
-        line_bot_api.reply_message(reply_token, [
-            TextSendMessage(text=f"{result}"),
-            TextSendMessage(text=f"糖尿病機率:{prediction_proba[1]*100:.2f}%"),
-            TextSendMessage(text="謝謝光臨!! 有需要都可以在叫我喔")
-        ])
+            have_diabetes = response_data.get('have_diabetes', None)
+            diabetes_percentage = response_data.get('diabetes_percentage', None)
 
+            if have_diabetes is None or diabetes_percentage is None:
+                raise ValueError("Response error!")
+
+            result = "没有糖尿病" if have_diabetes is False else "有糖尿病"
+            line_bot_api.reply_message(reply_token, [
+                TextSendMessage(text=f"{result}"),
+                TextSendMessage(text=f"糖尿病機率:{diabetes_percentage:.2f}%"),
+                TextSendMessage(text="謝謝光臨!! 有需要都可以在叫我喔")
+            ])
+        except Exception as e:
+            line_bot_api.reply_message(reply_token, [
+                TextSendMessage(text="伺服端錯誤，請稍後再試。")
+            ])
     '''
 
     elif user_testType == 'hypertension':
