@@ -138,7 +138,7 @@ def process_final_input(reply_token, user_id):
     user_testType = user_state[user_id].testType
     user_data = user_state[user_id].data
 
-    print(requests.get(api_url).content)
+    print(requests.get(base_api_url).content)
     
     if user_testType == 'diabete':
         # 邏輯回歸預測
