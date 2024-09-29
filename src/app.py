@@ -7,6 +7,7 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage, TemplateS
 import pandas as pd
 import requests
 import os
+import logging
 
 # 载入 .env 文件
 load_dotenv()
@@ -137,8 +138,6 @@ def process_final_input(reply_token, user_id):
     # 獲取使用者資料
     user_testType = user_state[user_id].testType
     user_data = user_state[user_id].data
-
-    print(requests.get(base_api_url).content)
     
     if user_testType == 'diabete':
         # 邏輯回歸預測
@@ -299,6 +298,9 @@ def validate_numeric_input(event, msg):
 # 用戶傳送訊息的時候做出的回覆
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
+    response = requests.get(base_api_url)
+    print(response.text)
+
     user_id = event.source.user_id
     msg = event.message.text
     if msg == 'exit':
