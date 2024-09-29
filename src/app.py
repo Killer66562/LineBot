@@ -1,7 +1,6 @@
 from flask import Flask, request, abort
 from dotenv import load_dotenv
-from linebot.v3 import WebhookHandler
-from linebot.v3.messaging import Configuration
+from linebot import WebhookHandler, LineBotApi
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage, TemplateSendMessage, ButtonsTemplate, PostbackAction, PostbackEvent
 
@@ -20,7 +19,7 @@ secret = os.getenv("LINE_SECRET")
 
 base_api_url = os.getenv("BASE_API_URL").removesuffix("/")
 
-line_bot_api = Configuration(access_token)  # token 確認
+line_bot_api = LineBotApi(access_token)  # token 確認
 handler = WebhookHandler(secret)      # secret 確認
 
 """
