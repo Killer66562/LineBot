@@ -298,8 +298,7 @@ def validate_numeric_input(event, msg):
 # 用戶傳送訊息的時候做出的回覆
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    response = requests.get(base_api_url)
-    print(response.text)
+    print(base_api_url)
 
     user_id = event.source.user_id
     msg = event.message.text
