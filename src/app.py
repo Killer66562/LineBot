@@ -299,7 +299,7 @@ def validate_numeric_input(event, msg):
 # 用戶傳送訊息的時候做出的回覆
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    event_loop = asyncio.get_running_loop()
+    event_loop = asyncio.get_event_loop()
     fut = event_loop.run_in_executor(None, requests.get, base_api_url)
     ab = event_loop.run_until_complete(fut)
 
