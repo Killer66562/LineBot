@@ -8,6 +8,7 @@ import pandas as pd
 import requests
 import os
 import logging
+import asyncio
 
 # 载入 .env 文件
 load_dotenv()
@@ -298,7 +299,11 @@ def validate_numeric_input(event, msg):
 # 用戶傳送訊息的時候做出的回覆
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    print(base_api_url)
+    event_loop = asyncio.get_running_loop()
+    fut = event_loop.run_in_executor(None, requests.get, base_api_url)
+    ab = event_loop.run_until_complete(fut)
+
+    logging.info(ab.content)
 
     user_id = event.source.user_id
     msg = event.message.text
