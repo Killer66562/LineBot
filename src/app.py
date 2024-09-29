@@ -156,9 +156,8 @@ def process_final_input(reply_token, user_id):
             response = requests.post(api_url, json=user_input, headers={'Content-type': 'application/json'})
             response.raise_for_status()
 
-            print(response)
-
             response_data = response.json()
+            logging.info(response_data)
 
             have_diabetes = response_data.get('have_diabetes', None)
             diabetes_percentage = response_data.get('diabetes_percentage', None)
