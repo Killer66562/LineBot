@@ -148,13 +148,14 @@ def process_final_input(reply_token, user_id):
             'blood_sugar': user_data[4]
         }
 
-        print(user_input)
-
         # 傳至NAS並回傳預測結果
         api_url = f'{base_api_url}/predict/diabetes'
         try:
             response = requests.post(api_url, json=user_input, headers={'Content-type': 'application/json'})
             response.raise_for_status()
+
+            print(response)
+            
             response_data = response.json()
 
             have_diabetes = response_data.get('have_diabetes', None)
