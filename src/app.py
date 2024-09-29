@@ -149,7 +149,7 @@ def process_final_input(reply_token, user_id):
         }
 
         # 傳至NAS並回傳預測結果
-        api_url = f'{base_api_url}/diabetes'
+        api_url = f'{base_api_url}/predict/diabetes'
         try:
             response = requests.post(api_url, json=user_input)
             response.raise_for_status()
